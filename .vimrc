@@ -5,6 +5,17 @@
 set nocompatible		" be iMproved, required
 filetype off			" required
 
+let mapleader = "\<Space>"
+" Split window
+noremap <leader>s :sp<CR>-
+noremap <leader>v :vsp<CR>-
+" Go to definition
+"noremap <leader>d gd
+" Go to file
+noremap <leader>f gf
+noremap <leader>w :w<CR>
+noremap <leader>q :q<CR>
+
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -49,10 +60,19 @@ Plugin 'vim-gitgutter'
 Plugin 'YouCompleteMe'
 
 " tern!
-Plugin 'tern_for_vim'
+"Plugin 'tern_for_vim'
 
-" solidity syntax!
-Plugin 'vim-solidity'
+" qml for vim
+Plugin 'vim-qml'
+
+" Rust features
+Plugin 'rust.vim'
+
+" Rust completion and navigation
+Plugin 'racer-rust/vim-racer'
+
+" Editorconfig support
+Plugin 'editorconfig/editorconfig-vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -86,8 +106,8 @@ set ts=4
 " number of spaces to use for each step if (auto)indent
 set sw=4
 
-" use spaces instead of tabs
-set et
+" use tabs instead of spaces
+set noet
 
 " set background to dark (characters will be light)
 set background=dark
@@ -148,14 +168,14 @@ let g:airline#extensions#tabline#enabled = 1
 """ syntastic
 
 " recommended settings
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+"let g:syntastic_always_populate_loc_list = 1
+"let g:syntastic_auto_loc_list = 1
+"let g:syntastic_check_on_open = 1
+"let g:syntastic_check_on_wq = 0
 
 
 
@@ -170,3 +190,32 @@ let g:indent_guides_color_change_percent = 10
 autocmd BufReadPre,FileReadPre * :IndentGuidesEnable
 autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#121212 ctermbg=237
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#121212 ctermbg=236
+
+
+" vim-racer
+set hidden
+let g:racer_cmd = "/Users/marek/.cargo/bin/racer"
+
+" more verbose completer
+let g:racer_experimental_completer = 1
+
+" enable noet
+let g:rust_recommended_style = 0
+
+" rust.vim which is a part of polyglot
+let g:rustfmt_autosave = 0
+
+au FileType rust nmap gd <Plug>(rust-def)
+au FileType rust nmap gs <Plug>(rust-def-split)
+au FileType rust nmap gx <Plug>(rust-def-vertical)
+"au FileType rust nmap <leader>gd <Plug>(rust-doc)
+
+" 
+let g:ycm_path_to_python_interpreter="/usr/bin/python"
+
+
+" close scratch on leave
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+
+" ctrlp custom ignore
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|target'
