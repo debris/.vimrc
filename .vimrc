@@ -35,7 +35,7 @@ set si
 " highlight search pattern
 set hlsearch
 
-" You will have bad experience for diagnostic messages when it's default 4000.
+" you will have bad experience for diagnostic messages when it's default 4000.
 set updatetime=300
 
 " if hidden is not set, TextEdit might fail.
@@ -47,8 +47,30 @@ set shortmess+=c
 " always show signcolumns
 set signcolumn=yes
 
-" Better display for messages
+" better display for messages
 set cmdheight=2
+
+" color column at 120 to avoid going to far to the right
+set colorcolumn=120
+
+" set to auto read when a file is changed from the outside
+set autoread
+
+" show matching brackets
+set showmatch
+
+" no annoying sound on errors
+set noerrorbells
+set novisualbell
+set t_vb=
+set tm=500
+
+" set utf8 as standard encoding and en_US as the standard language
+set encoding=utf8
+
+" visual mode pressing * or # searches for the current selection
+vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
+vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
 "-------------------- vim-plug --------------------
 " avoid using standard Vim directory names like 'plugin'
@@ -81,6 +103,9 @@ Plug 'nathanaelkane/vim-indent-guides'
 " coc
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+" goyo
+Plug 'junegunn/goyo.vim'
+
 " Initialize plugin system
 call plug#end()
 
@@ -92,8 +117,21 @@ let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|target'
 " toggle on ctrl-n
 map <C-n> :NERDTreeToggle<CR>
 
+" find on ctrl-j
+map <C-j> :NERDTreeFind<CR>
+
+" display hidden files
+" let NERDTreeShowHidden=1
+
 " close vim if the only window open is nerdtree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" always open nerdtree when booting vim, but do not focus on it
+autocmd VimEnter * NERDTree
+autocmd VimEnter * wincmd p
+
+" do not display useless files
+let NERDTreeIgnore=['\.DS_Store', '\~$', '\.swp']
 
 "-------------------- solarized --------------------
 let g:solarized_termtrans = 1
@@ -153,3 +191,29 @@ inoremap <silent><expr> <c-space> coc#refresh()
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+"-------------------- goyo --------------------
+" set number of columns
+let g:goyo_width=120
+
+function! s:goyo_enter()
+    set number
+	if executable('tmux') && strlen($TMUX)
+    	silent !tmux set status off
+    	silent !tmux list-panes -F '\#F' | grep -q Z || tmux resize-pane -Z
+  	endif
+endfunction
+
+function! s:goyo_leave()
+	if executable('tmux') && strlen($TMUX)
+    	silent !tmux set status on
+    	silent !tmux list-panes -F '\#F' | grep -q Z && tmux resize-pane -Z
+  	endif
+endfunction
+
+" set goyo callbacks
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
+autocmd! User GoyoLeave nested call <SID>goyo_leave()
+
+" start distraction free writing on ctrl-g 
+map <C-g> :Goyo<CR>
