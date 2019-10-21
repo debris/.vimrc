@@ -1,221 +1,155 @@
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""" setup vundle and plugins
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"-------------------- options --------------------
+set nocompatible
 
-set nocompatible		" be iMproved, required
-filetype off			" required
-
-let mapleader = "\<Space>"
-" Split window
+" remap splitting window
 noremap <leader>s :sp<CR>-
 noremap <leader>v :vsp<CR>-
-" Go to definition
-"noremap <leader>d gd
-" Go to file
-noremap <leader>f gf
-noremap <leader>w :w<CR>
-noremap <leader>q :q<CR>
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
-
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
-
-" install nerdtree
-Plugin 'The-NERD-tree'
-
-" install nerdtree commenter
-Plugin 'The-NERD-Commenter'
-
-" install languages support
-Plugin 'vim-polyglot'
-
-" install colors package
-Plugin 'vim-colors-solarized'
-
-" install git helper
-Plugin 'vim-fugitive'
-
-" Fuzzy file, buffer, mru etc. (finder)
-Plugin 'ctrlp.vim'
-
-" Ligth powerline!
-Plugin 'vim-airline'
-
-" syntax checker
-" commented out until figure out, how to use it
-"Plugin 'syntastic'
-
-" colorfull indention
-Plugin 'vim-indent-guides'
-
-" shows git diff in the gutter
-Plugin 'vim-gitgutter'
-
-" autocompletion!
-Plugin 'YouCompleteMe'
-
-" tern!
-"Plugin 'tern_for_vim'
-
-" qml for vim
-Plugin 'vim-qml'
-
-" Rust features
-Plugin 'rust.vim'
-
-" Rust completion and navigation
-Plugin 'racer-rust/vim-racer'
-
-" Editorconfig support
-Plugin 'editorconfig/editorconfig-vim'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""" configure globals and plugins
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-
-
-""" GLOBAL
-
-" enable mouse in iTerm on MacOS
-:set mouse=a
-
-" enable coloring syntax
+" enable syntax coloring
 syntax enable
+
+" enable mouse
+:set mouse=a
 
 " show line numbers
 set number
 
-" do smart autoindenting when starting a new line.
-set si
-
-" number of spaces that a <Tab> in the file counts for.
+" number of spaces that tab in the file counts for
 set ts=4
 
 " number of spaces to use for each step if (auto)indent
 set sw=4
 
-" use tabs instead of spaces
-set noet
+" use spaces instead of tabs
+set et
 
-" set background to dark (characters will be light)
+" set color of the background
 set background=dark
 
-" set foreground color to 256
+" set number of terminal colors
 set t_Co=256
+
+" do smart autoindenting when starting new line
+set si
 
 " highlight search pattern
 set hlsearch
 
-" When editing a file, always jump to the last known cursor position.
-" Don't do it when the position is invalid or when inside an event handler
-" (happens when dropping a file on gvim).
-autocmd BufReadPost *
-\ if line("'\"") > 0 && line("'\"") <= line("$") |
-\   exe "normal g`\"" |
-\ endif
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
 
-" allow backspacing over everything in insert mode
-set backspace=indent,eol,start
+" if hidden is not set, TextEdit might fail.
+set hidden
 
-""" The-NERD-tree
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
 
-" open nerdtree on start
-"autocmd vimenter * NERDTree
+" always show signcolumns
+set signcolumn=yes
 
-" toggle nerdtree on ctrl-n
+" Better display for messages
+set cmdheight=2
+
+"-------------------- vim-plug --------------------
+" avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+" ctrlp
+Plug 'ctrlpvim/ctrlp.vim'
+
+" nerdtree
+Plug 'scrooloose/nerdtree'
+
+" solarized
+Plug 'altercation/solarized', { 'rtp': 'vim-colors-solarized' }
+
+" fugitive
+Plug 'tpope/vim-fugitive'
+
+" nerdcommenter
+Plug 'scrooloose/nerdcommenter'
+
+" editorconfig
+Plug 'editorconfig/editorconfig-vim'
+
+" airline
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+" indent-guides
+Plug 'nathanaelkane/vim-indent-guides'
+
+" coc
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" Initialize plugin system
+call plug#end()
+
+"-------------------- ctrlp --------------------
+" custom ignore
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|target'
+
+"-------------------- nerdtree --------------------
+" toggle on ctrl-n
 map <C-n> :NERDTreeToggle<CR>
 
-" do not use fancy arrows
-let g:NERDTreeDirArrows=0
+" close vim if the only window open is nerdtree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-
-
-""" The-NERD-Commenter
-
-" map comments to enter
-nnoremap <C-m> :call NERDComment(0,"toggle")<C-m>
-
-
-
-""" vim-colors-solarized
-
-" old-setup
+"-------------------- solarized --------------------
 let g:solarized_termtrans = 1
 let g:solarized_termcolors=256
 let g:solarized_contrast='high'
 colorscheme solarized
 
-""" vim-airline
-" aka powerline
+"-------------------- nerdcommenter --------------------
+" map comments to enter
+nnoremap <C-m> :call NERDComment(0,"toggle")<C-m>
 
+"-------------------- editorconfig --------------------
+" ensures that this plugin works well with fugitive
+let g:EditorConfig_exclude_patterns = ['fugitive://.\*']
+
+"-------------------- airline --------------------
 " display all buffers
 let g:airline#extensions#tabline#enabled = 1
 
+" set the theme
+let g:airline_theme='solarized'
 
-
-""" syntastic
-
-" recommended settings
-"set statusline+=%#warningmsg#
-"set statusline+=%{SyntasticStatuslineFlag()}
-"set statusline+=%*
-
-"let g:syntastic_always_populate_loc_list = 1
-"let g:syntastic_auto_loc_list = 1
-"let g:syntastic_check_on_open = 1
-"let g:syntastic_check_on_wq = 0
-
-
-
-""" vim-indent-guides
-
-" old-setup
-let g:indent_guides_auto_colors = 0
+"-------------------- indent-guides --------------------
 let g:indent_guides_start_level = 1
 let g:indent_guides_guide_size = 4
-let g:indent_guides_color_change_percent = 10
 
-autocmd BufReadPre,FileReadPre * :IndentGuidesEnable
+" enable by default
+let g:indent_guides_enable_on_vim_startup = 1
+
+" custom colors
+let g:indent_guides_auto_colors = 0
 autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#121212 ctermbg=237
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#121212 ctermbg=236
 
+"-------------------- coc --------------------
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
-" vim-racer
-set hidden
-let g:racer_cmd = "/Users/marek/.cargo/bin/racer"
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" more verbose completer
-let g:racer_experimental_completer = 1
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
-" enable noet
-let g:rust_recommended_style = 0
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
 
-" rust.vim which is a part of polyglot
-let g:rustfmt_autosave = 0
-
-au FileType rust nmap gd <Plug>(rust-def)
-au FileType rust nmap gs <Plug>(rust-def-split)
-au FileType rust nmap gx <Plug>(rust-def-vertical)
-"au FileType rust nmap <leader>gd <Plug>(rust-doc)
-
-" 
-let g:ycm_path_to_python_interpreter="/usr/bin/python"
-
-
-" close scratch on leave
-autocmd InsertLeave * if pumvisible() == 0|pclose|endif
-
-" ctrlp custom ignore
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|target'
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
