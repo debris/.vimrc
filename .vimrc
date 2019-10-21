@@ -48,7 +48,7 @@ set shortmess+=c
 set signcolumn=yes
 
 " better display for messages
-set cmdheight=2
+set cmdheight=3
 
 " color column at 120 to avoid going to far to the right
 set colorcolumn=120
@@ -172,6 +172,12 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
+" add coc extensions
+call coc#add_extension("coc-rust-analyzer", "coc-json", "coc-html", "coc-snippets")
+
+" enable cargo watch by default
+call coc#config("rust-analyzer.enableCargoWatchOnStartup", "enabled")
+
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
 inoremap <silent><expr> <TAB>
@@ -191,6 +197,10 @@ inoremap <silent><expr> <c-space> coc#refresh()
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" cargo watch
+command! -nargs=0 Cstatus       :call CocAction("runCommand", "rust-analyzer.analyzerStatus")
+command! -nargs=0 Cstop         :call CocAction("runCommand", "rust-analyzer.stopCargoWatch")
 
 "-------------------- goyo --------------------
 " set number of columns
